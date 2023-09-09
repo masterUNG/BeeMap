@@ -8,10 +8,16 @@ class AppDialog {
     required this.title,
   });
 
-  void normalDialog({Widget? firstAction}) {
-    Get.dialog(AlertDialog(
+  void normalDialog({
+    Widget? firstAction,
+    Widget? secondAction,
+    Widget? contentWidget,
+  }) {
+    Get.dialog(AlertDialog(scrollable: true,
       title: Text(title),
+      content: contentWidget,
       actions: [
+        secondAction ?? const SizedBox(),
         firstAction ??
             TextButton(
                 onPressed: () {

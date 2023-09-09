@@ -1,8 +1,15 @@
 import 'dart:io';
 
+import 'package:beemap/states/authen.dart';
+import 'package:beemap/states/main_home.dart';
 import 'package:beemap/states/show_map.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+var getPage = <GetPage<dynamic>>[
+  GetPage(name: '/authen', page: () => const Authen(),),
+  GetPage(name: '/mainHome', page: () => const MainHome(),),
+];
 
 void main() {
   HttpOverrides.global = MyHttpOverride();
@@ -15,7 +22,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: ShowMap(),
+      theme: ThemeData(useMaterial3: true),
+      getPages: getPage,
+     initialRoute: '/authen',
     );
   }
 }

@@ -122,4 +122,31 @@ class AppService {
 
     return distance;
   }
+
+  Future<void> processCreateNewAccount(
+      {required String name,
+      required String user,
+      required String password}) async {
+    String urlApiCheckUser =
+        'https://www.androidthai.in.th/fluttertraining/getUserBee.php?isAdd=true&user=$user';
+
+    await Dio().get(urlApiCheckUser).then((value) async {
+      print('ค่าที่จาก api Check User ---> $value');
+
+      if (value.toString() == 'null') {
+        //User OK
+
+        String urlInsertData =
+            'https://www.androidthai.in.th/fluttertraining/insertBeeUser.php?isAdd=true&name=$name&user=$user&password=$password';
+        await Dio().get(urlInsertData).then((value) {
+
+          Get.back();
+          Get.snackbar('Welcome', 'Create Account Success Please Login');
+          
+        });
+      } else {
+        Get.snackbar('User ซ้ำ', 'เปลี่ยน User ใหม่ User ช้ำ');
+      }
+    });
+  }
 }
