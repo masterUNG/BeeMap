@@ -13,6 +13,11 @@ class WidgetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: pressFunc, child: Text(label));
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.deepOrange, foregroundColor: Colors.white),
+      onPressed: pressFunc,
+      child: Text(label),
+    );
   }
 }

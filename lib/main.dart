@@ -3,17 +3,46 @@ import 'dart:io';
 import 'package:beemap/states/authen.dart';
 import 'package:beemap/states/main_home.dart';
 import 'package:beemap/states/show_map.dart';
+import 'package:beemap/utility/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 var getPage = <GetPage<dynamic>>[
-  GetPage(name: '/authen', page: () => const Authen(),),
-  GetPage(name: '/mainHome', page: () => const MainHome(),),
+  GetPage(
+    name: '/authen',
+    page: () => const Authen(),
+  ),
+  GetPage(
+    name: '/mainHome',
+    page: () => const MainHome(),
+  ),
 ];
 
-void main() {
+String? firstPage;
+
+Future<void> main() async {
   HttpOverrides.global = MyHttpOverride();
-  runApp(const MyApp());
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  var datas = sharedPreferences.getStringList('datas');
+  print('นี่คื่อค่า datas ที่อ่านได้จาก main.dart ---> $datas');
+
+  if (datas == null) {
+    //ไม่ได้ login
+    firstPage = '/authen';
+    runApp(const MyApp());
+  } else {
+    // Login อยู่
+
+    AppController appController = Get.put(AppController());
+    appController.datas.addAll(datas);
+
+    firstPage = '/mainHome';
+    runApp(const MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +53,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       theme: ThemeData(useMaterial3: true),
       getPages: getPage,
-     initialRoute: '/authen',
+      initialRoute: firstPage,
     );
   }
 }

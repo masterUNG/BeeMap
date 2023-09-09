@@ -1,9 +1,13 @@
+import 'package:beemap/states/authen.dart';
 import 'package:beemap/utility/app_controller.dart';
 import 'package:beemap/utility/app_dialog.dart';
 import 'package:beemap/utility/app_service.dart';
+import 'package:beemap/widgets/widget_button.dart';
+import 'package:beemap/widgets/widget_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Setting extends StatefulWidget {
   const Setting({super.key});
@@ -63,6 +67,24 @@ class _SettingState extends State<Setting> {
             ),
           )
         ],
+      ),
+      floatingActionButton: WidgetButton(
+        label: 'Sign Out',
+        pressFunc: () {
+          AppDialog(title: 'Sign Out').normalDialog(
+              contentWidget:
+                  const WidgetText(data: 'Please Confirm for Sign Out'),
+              secondAction: WidgetButton(
+                label: 'SignOut',
+                pressFunc: () async {
+                  SharedPreferences sharedPreferences =
+                      await SharedPreferences.getInstance();
+                  sharedPreferences.clear().then((value) {
+                    Get.offAll(const Authen());
+                  });
+                },
+              ));
+        },
       ),
     );
   }

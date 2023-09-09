@@ -2,6 +2,7 @@ import 'package:beemap/states/create_new_account.dart';
 import 'package:beemap/utility/app_constant.dart';
 import 'package:beemap/utility/app_controller.dart';
 import 'package:beemap/utility/app_dialog.dart';
+import 'package:beemap/utility/app_service.dart';
 import 'package:beemap/widgets/widget_button.dart';
 import 'package:beemap/widgets/widget_form.dart';
 import 'package:beemap/widgets/widget_text.dart';
@@ -19,6 +20,9 @@ class Authen extends StatefulWidget {
 class _AuthenState extends State<Authen> {
   AppController appController = Get.put(AppController());
 
+  TextEditingController userController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,22 +37,31 @@ class _AuthenState extends State<Authen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   WidgetForm(
+                    textEditingController: userController,
                     hint: 'User :',
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   WidgetForm(
+                    textEditingController: passwordController,
                     hint: 'Password :',
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   SizedBox(
                     width: 250,
                     child: WidgetButton(
                       label: 'Login',
-                      pressFunc: () {},
+                      pressFunc: () {
+                        if ((userController.text.isEmail) ||
+                            (passwordController.text.isEmpty)) {
+                          Get.snackbar('Have Spave', 'Please Fill EveryBlank');
+                        } else {
+                          AppService().checkLogin(user: userController.text, password: passwordController.text);
+                        }
+                      },
                     ),
                   ),
                   Row(

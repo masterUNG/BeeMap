@@ -5,6 +5,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:beemap/models/bee_model.dart';
+import 'package:beemap/models/user_model.dart';
+import 'package:beemap/states/main_home.dart';
 import 'package:beemap/utility/app_controller.dart';
 import 'package:beemap/utility/app_dialog.dart';
 import 'package:dio/dio.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppService {
   AppController appController = Get.put(AppController());
@@ -139,13 +142,50 @@ class AppService {
         String urlInsertData =
             'https://www.androidthai.in.th/fluttertraining/insertBeeUser.php?isAdd=true&name=$name&user=$user&password=$password';
         await Dio().get(urlInsertData).then((value) {
-
           Get.back();
           Get.snackbar('Welcome', 'Create Account Success Please Login');
-          
         });
       } else {
         Get.snackbar('User ซ้ำ', 'เปลี่ยน User ใหม่ User ช้ำ');
+      }
+    });
+  }
+
+  Future<void> checkLogin(
+      {required String user, required String password}) async {
+    String urlApi =
+        'https://www.androidthai.in.th/fluttertraining/getUserBee.php?isAdd=true&user=$user';
+
+    await Dio().get(urlApi).then((value) async {
+      if (value.toString() == 'null') {
+        //user False หรือ user ไม่มี
+        Get.snackbar('User False', 'ไม่มี user นีใน ฐานข้อมูลของเรา');
+      } else {
+        print('value ---> $value');
+
+        var result = json.decode(value.data);
+        print('result ------> $result');
+
+        for (var element in result) {
+          UserModel userModel = UserModel.fromMap(element);
+          if (userModel.password == password) {
+            //password true
+
+            var datas = <String>[];
+            datas.add(userModel.id);
+            datas.add(userModel.name);
+
+            SharedPreferences sharedPreferences =
+                await SharedPreferences.getInstance();
+            sharedPreferences.setStringList('datas', datas).then((value) {
+              Get.offAll(const MainHome());
+              Get.snackbar(
+                  'Welcome', 'ยินดีต้อนรับ ${userModel.name} สู่แอพของเรา');
+            });
+          } else {
+            Get.snackbar('Password false', 'Please Check Password False');
+          }
+        }
       }
     });
   }
